@@ -247,6 +247,11 @@ const InvestmentDetailSection: React.FC = () => {
 
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Main Title */}
+      <Title level={1} style={{ margin: '0 0 24px 0', fontSize: '32px', fontWeight: 500 }}>
+        Detalle de cartera
+      </Title>
+
       {/* Back Button */}
       <Button 
         type="text" 
@@ -268,15 +273,36 @@ const InvestmentDetailSection: React.FC = () => {
           </Tag>
         </Row>
 
-        <Tag style={{ 
-          borderRadius: 12, 
-          border: '1px solid #d9d9d9', 
-          backgroundColor: '#fafafa',
-          padding: '4px 12px',
-          marginBottom: '16px'
-        }}>
-          {investment.category}
-        </Tag>
+        {/* Performance */}
+        <div style={{ marginBottom: '16px' }}>
+          <Row gutter={[32, 16]}>
+            {investment.performance.map((item, index) => (
+              <Col span={8} key={index}>
+                <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
+                  <Text type="secondary" style={{ fontSize: '14px', display: 'block', marginBottom: '8px' }}>
+                    {item.period}
+                  </Text>
+                  <Space align="center" size={4}>
+                    {item.isNegative ? (
+                      <CaretDownOutlined style={{ color: '#ff4d4f', fontSize: 12 }} />
+                    ) : (
+                      <CaretUpOutlined style={{ color: '#52c41a', fontSize: 12 }} />
+                    )}
+                    <Text 
+                      strong 
+                      style={{ 
+                        color: item.isNegative ? '#ff4d4f' : '#52c41a', 
+                        fontSize: '18px'
+                      }}
+                    >
+                      {item.percentage}
+                    </Text>
+                  </Space>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </div>
 
         <Paragraph style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.65)', marginBottom: 0 }}>
           {investment.description}
@@ -310,37 +336,29 @@ const InvestmentDetailSection: React.FC = () => {
 
       <Divider />
 
-      {/* Performance */}
-      <div style={{ marginBottom: '24px' }}>
+      {/* Holdings Section */}
+      <div style={{ marginBottom: '32px' }}>
         <Title level={4} style={{ marginBottom: '16px' }}>
-          Rendimientos Históricos
+          Composición de la Cartera
         </Title>
-        <Row gutter={[32, 16]}>
-          {investment.performance.map((item, index) => (
-            <Col span={8} key={index}>
-              <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
-                <Text type="secondary" style={{ fontSize: '14px', display: 'block', marginBottom: '8px' }}>
-                  {item.period}
-                </Text>
-                <Space align="center" size={4}>
-                  {item.isNegative ? (
-                    <CaretDownOutlined style={{ color: '#ff4d4f', fontSize: 12 }} />
-                  ) : (
-                    <CaretUpOutlined style={{ color: '#52c41a', fontSize: 12 }} />
-                  )}
-                  <Text 
-                    strong 
-                    style={{ 
-                      color: item.isNegative ? '#ff4d4f' : '#52c41a', 
-                      fontSize: '18px'
-                    }}
-                  >
-                    {item.percentage}
-                  </Text>
-                </Space>
-              </div>
-            </Col>
-          ))}
+        <Row gutter={[24, 16]}>
+          <Col xs={24} lg={14}>
+            <Table
+              columns={holdingsColumns}
+              dataSource={investment.holdings.map((holding, index) => ({
+                ...holding,
+                key: index
+              }))}
+              pagination={false}
+              size="small"
+              style={{ backgroundColor: '#fff' }}
+            />
+          </Col>
+          <Col xs={24} lg={10}>
+            <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Pie data={chartData} options={chartOptions} />
+            </div>
+          </Col>
         </Row>
       </div>
 
@@ -370,34 +388,6 @@ const InvestmentDetailSection: React.FC = () => {
               <Text style={{ fontSize: '16px', color: '#2c5aa0' }}>
                 {details.fees}
               </Text>
-            </div>
-          </Col>
-        </Row>
-      </div>
-
-      <Divider />
-
-      {/* Holdings Section */}
-      <div style={{ marginBottom: '32px' }}>
-        <Title level={4} style={{ marginBottom: '16px' }}>
-          Composición de la Cartera
-        </Title>
-        <Row gutter={[24, 16]}>
-          <Col xs={24} lg={14}>
-            <Table
-              columns={holdingsColumns}
-              dataSource={investment.holdings.map((holding, index) => ({
-                ...holding,
-                key: index
-              }))}
-              pagination={false}
-              size="small"
-              style={{ backgroundColor: '#fff' }}
-            />
-          </Col>
-          <Col xs={24} lg={10}>
-            <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Pie data={chartData} options={chartOptions} />
             </div>
           </Col>
         </Row>

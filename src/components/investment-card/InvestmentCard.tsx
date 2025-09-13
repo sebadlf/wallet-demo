@@ -24,14 +24,20 @@ interface PerformanceData {
   isNegative?: boolean;
 }
 
+interface StockHolding {
+  symbol: string;
+  name: string;
+  percentage: number;
+}
+
 type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
 
 interface InvestmentCardProps {
   title?: string;
   riskLevel?: RiskLevel;
-  category?: string;
   description?: string;
   performance?: PerformanceData[];
+  holdings?: StockHolding[];
   onViewDetails?: () => void;
   onInvest?: () => void;
 }
@@ -39,16 +45,20 @@ interface InvestmentCardProps {
 const InvestmentCard: React.FC<InvestmentCardProps> = ({
   title = "Ahorro $",
   riskLevel = "conservador",
-  category = "Alta liquidez",
   description = "Movilizá tu dinero hasta que lo necesites.",
   performance = [
     { period: "Semana", percentage: "0,10%" },
     { period: "Mes", percentage: "3,46%" },
     { period: "Trimestre", percentage: "8,19%" }
   ],
+  holdings = [],
   onViewDetails,
   onInvest
 }) => {
+  // Get top 3 holdings by percentage
+  const topHoldings = holdings
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 3);
   return (
     <Card
       style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}
@@ -64,11 +74,6 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
           </Tag>
         </Row>
 
-        <Space wrap size={[8, 4]}>
-          <Tag style={{ borderRadius: 12, border: '1px solid #d9d9d9', backgroundColor: '#fafafa' }}>
-            {category}
-          </Tag>
-        </Space>
 
         <Text type="secondary" style={{ fontSize: 14 }}>
           {description}
@@ -106,6 +111,31 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
             ))}
           </Row>
         </div>
+
+        {topHoldings.length > 0 && (
+          <div>
+            <Text strong style={{ fontSize: 14, marginBottom: 8, display: 'block' }}>
+              Principales participaciones
+            </Text>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {topHoldings.map((holding, index) => (
+                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <Text strong style={{ fontSize: 12, color: '#2c5aa0' }}>
+                      {holding.symbol}
+                    </Text>
+                    <Text type="secondary" style={{ fontSize: 11 }}>
+                      {holding.name}
+                    </Text>
+                  </div>
+                  <Text strong style={{ fontSize: 12, color: '#52c41a' }}>
+                    {holding.percentage.toFixed(1)}%
+                  </Text>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Row gutter={12}>
           <Col span={12}>

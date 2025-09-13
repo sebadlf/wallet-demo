@@ -15,7 +15,6 @@ interface PerformanceData {
 interface InvestmentData {
   title: string;
   riskLevel: RiskLevel;
-  category: string;
   description: string;
   performance: PerformanceData[];
 }
@@ -94,16 +93,6 @@ const InvestmentConfirmation: React.FC<InvestmentConfirmationProps> = ({
               {investment.riskLevel.charAt(0).toUpperCase() + investment.riskLevel.slice(1)}
             </Tag>
           </Row>
-
-          <Tag style={{ 
-            borderRadius: 12, 
-            border: '1px solid #d9d9d9', 
-            backgroundColor: '#fff',
-            padding: '4px 12px',
-            marginBottom: '12px'
-          }}>
-            {investment.category}
-          </Tag>
 
           <Text style={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.65)', display: 'block' }}>
             {investment.description}

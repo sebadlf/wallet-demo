@@ -20,19 +20,16 @@ interface EvolutionData {
 export interface InvestmentData {
   title: string;
   riskLevel: RiskLevel;
-  category: string;
   description: string;
   performance: PerformanceData[];
   holdings: StockHolding[];
   evolution: EvolutionData[];
 }
 
-export const getInvestmentData = (id: string): InvestmentData | null => {
-  const investments: Record<string, InvestmentData> = {
+export const INVESTMENT_DATA: Record<string, InvestmentData> = {
     'ahorro': {
       title: "Ahorro $",
       riskLevel: "conservador",
-      category: "Alta liquidez",
       description: "Movilizá tu dinero hasta que lo necesites.",
       performance: [
         { period: "Semana", percentage: "-1,67%", isNegative: true },
@@ -313,7 +310,6 @@ export const getInvestmentData = (id: string): InvestmentData | null => {
     'ahorro-plus': {
       title: "Ahorro Plus",
       riskLevel: "conservador",
-      category: "Alta liquidez",
       description: "Animate a más.",
       performance: [
         { period: "Semana", percentage: "0,12%" },
@@ -594,7 +590,6 @@ export const getInvestmentData = (id: string): InvestmentData | null => {
     'gestion-mix': {
       title: "Gestión MIX VI",
       riskLevel: "moderado",
-      category: "Renta Fija en Pesos",
       description: "Un pasito más para empezar a diversificar tu inversión.",
       performance: [
         { period: "Semana", percentage: "7,91%" },
@@ -876,7 +871,6 @@ export const getInvestmentData = (id: string): InvestmentData | null => {
     'cartera-renta': {
       title: "Cartera Renta $",
       riskLevel: "moderado",
-      category: "Renta Fija en Pesos",
       description: "Potencia tus ahorros.",
       performance: [
         { period: "Semana", percentage: "-4,67%", isNegative: true },
@@ -1158,7 +1152,6 @@ export const getInvestmentData = (id: string): InvestmentData | null => {
     'bonos': {
       title: "Bonos",
       riskLevel: "agresivo",
-      category: "Renta Fija en Pesos",
       description: "Busca acompañar el tipo de cambio oficial.",
       performance: [
         { period: "Semana", percentage: "0,76%" },
@@ -1441,7 +1434,6 @@ export const getInvestmentData = (id: string): InvestmentData | null => {
     'cartera-renta-fija': {
       title: "Cartera Renta Fija",
       riskLevel: "agresivo",
-      category: "Renta Fija en Pesos",
       description: "Le da pelea a la inflación.",
       performance: [
         { period: "Semana", percentage: "1,68%" },
@@ -1722,7 +1714,15 @@ export const getInvestmentData = (id: string): InvestmentData | null => {
         { date: "2024-12-31", percentage: -1.23 }
       ]
     }
-  };
+};
 
-  return investments[id] || null;
+export const getInvestmentData = (id: string): InvestmentData | null => {
+  return INVESTMENT_DATA[id] || null;
+};
+
+export const getAllInvestments = (): Array<InvestmentData & { id: string }> => {
+  return Object.entries(INVESTMENT_DATA).map(([id, data]) => ({
+    ...data,
+    id
+  }));
 };

@@ -4,27 +4,13 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import InvestmentCards from './InvestmentCards';
 import InvestmentTable from './InvestmentTable';
 import InvestmentConfirmation from '../components/investment-confirmation';
+import type { InvestmentData } from '../utils';
 
 const { Title } = Typography;
 const { Option } = Select;
 
 type ViewType = 'grilla' | 'lista';
 type RiskFilterType = 'todos' | 'conservador' | 'moderado' | 'agresivo';
-type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
-
-interface PerformanceData {
-  period: string;
-  percentage: string;
-  isNegative?: boolean;
-}
-
-interface InvestmentData {
-  title: string;
-  riskLevel: RiskLevel;
-  category: string;
-  description: string;
-  performance: PerformanceData[];
-}
 
 const InvestmentSection: React.FC = () => {
   const [viewType, setViewType] = useState<ViewType>('grilla');
