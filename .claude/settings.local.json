@@ -3,7 +3,8 @@
     "allow": [
       "WebFetch(domain:ant.design)",
       "WebFetch(domain:bbsa.com.ar)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

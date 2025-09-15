@@ -1,7 +1,6 @@
 import React from 'react';
 import { Card, Col, Row, Space, Typography, Tag, Button } from 'antd';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import { InvestButton } from './styles';
 
 const { Title, Text } = Typography;
 
@@ -140,7 +139,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
         <Row gutter={12}>
           <Col span={12}>
             <Button 
-              type="text" 
+              type="default"
               style={{ width: '100%', color: '#2c5aa0' }}
               onClick={onViewDetails}
             >
@@ -148,13 +147,13 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
             </Button>
           </Col>
           <Col span={12}>
-            <InvestButton 
+            <Button
               type="primary"
               style={{ width: '100%', backgroundColor: '#2c5aa0', borderColor: '#2c5aa0' }}
               onClick={onInvest}
             >
               Seleccionar
-            </InvestButton>
+            </Button>
           </Col>
         </Row>
       </Space>

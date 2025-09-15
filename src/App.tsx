@@ -1,7 +1,21 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router';
 import InvestmentSection from './sections/InvestmentSection';
 import InvestmentDetailSection from './sections/InvestmentDetailSection';
 import './App.css';
+import { App as AntdApp } from 'antd';
+import { useLayoutEffect } from 'react';
+
+
+const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+
+  useLayoutEffect(() => {
+    // Scroll to the top of the page when the route changes
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
+  return children;
+};
 
 // Header component
 const Header = () => {
@@ -20,17 +34,22 @@ const Header = () => {
 
 function App() {
   return (
-    <Router>
-      <div className="app">
-        <Header />
-        <main className="app-main">
-          <Routes>
-            <Route path="/" element={<InvestmentSection />} />
-            <Route path="/investment/:investmentId" element={<InvestmentDetailSection />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
+    <AntdApp> 
+      <Router>
+        <div className="app">
+          <Header />
+          <main className="app-main">
+            <Wrapper>
+              <Routes>
+                <Route path="/" element={<InvestmentSection />} />
+                <Route path="/investment/:investmentId" element={<InvestmentDetailSection />} />
+              </Routes>
+            </Wrapper>
+          </main>
+        </div>
+
+      </Router>
+    </AntdApp>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Tag, Row, Col, Space, Divider, Button, Table, Card } from 'antd';
+import { Typography, Tag, Row, Col, Space, Divider, Button, Table, Card, notification } from 'antd';
 import { CaretUpOutlined, CaretDownOutlined, InfoCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -7,7 +7,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate, useParams } from 'react-router';
 import { getInvestmentData } from '../utils';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
-import { Pie, Line } from 'react-chartjs-2';
+import { Pie } from 'react-chartjs-2';
 import PerformanceChart from '../components/performance-chart/PerformanceChart';
 import type { ColumnsType } from 'antd/es/table';
 
@@ -21,6 +21,7 @@ const InvestmentDetailSection: React.FC = () => {
   const navigate = useNavigate();
   const { investmentId } = useParams();
   const [isLargeScreen, setIsLargeScreen] = useState(true);
+  const [notificationApi, notificationContextHolder] = notification.useNotification();
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -32,6 +33,7 @@ const InvestmentDetailSection: React.FC = () => {
 
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
+
 
   const investment = investmentId ? getInvestmentData(investmentId) : null;
 
@@ -108,10 +110,25 @@ const InvestmentDetailSection: React.FC = () => {
 
   const details = getInvestmentDetails(investment.title);
 
+  const showSuccessNotification = () => {
+    console.log('Show success notification!!!');
+    notificationApi.success({
+      message: 'Tu solicitud ha sido recibida',
+      description: 'Un representante se pondrá en contacto contigo pronto para finalizar la selección de tu cartera.',
+      duration: 6,
+      placement: 'topRight',
+    });
+  };
+
   const handleConfirmSelection = () => {
     console.log('Investment confirmed:', investment.title);
     // Here you would typically call an API to process the investment
-    navigate('/');
+    showSuccessNotification();
+
+    setTimeout(() => {
+      navigate('/');
+    }, 500);
+
   };
 
   const holdingsColumns: ColumnsType<any> = [
@@ -211,67 +228,10 @@ const InvestmentDetailSection: React.FC = () => {
     maintainAspectRatio: false,
   };
 
-  const getEvolutionChartData = () => {
-    return {
-      labels: investment.evolution.map(point => {
-        const date = new Date(point.date);
-        return date.toLocaleDateString('es-AR', { month: 'short', day: 'numeric' });
-      }),
-      datasets: [
-        {
-          label: 'Evolución (%)',
-          data: investment.evolution.map(point => point.percentage),
-          borderColor: '#2c5aa0',
-          backgroundColor: 'rgba(44, 90, 160, 0.1)',
-          borderWidth: 2,
-          pointRadius: 0,
-          pointHoverRadius: 0,
-          fill: true,
-          tension: 0.3,
-        },
-      ],
-    };
-  };
-
-  const evolutionChartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: function(context: any) {
-            return `${context.parsed.y.toFixed(2)}%`;
-          }
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        beginAtZero: false,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.1)',
-        },
-        ticks: {
-          callback: function(value: any) {
-            return value + '%';
-          }
-        }
-      },
-    },
-    maintainAspectRatio: false,
-  };
-
   // Generate sample performance data based on evolution data
   const getPerformanceData = () => {
     const baseValue = 1000000; // Base value of 1M ARS
-    return investment.evolution.map((point, index) => {
+    return investment.evolution.map((point) => {
       const totalValue = baseValue * (1 + point.percentage / 100);
       return {
         date: point.date,
@@ -288,32 +248,55 @@ const InvestmentDetailSection: React.FC = () => {
 
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Main Title */}
-      <Title level={1} style={{ margin: '0 0 24px 0', fontSize: '32px', fontWeight: 500 }}>
-        Detalle de cartera
-      </Title>
-
-      {/* Back Button */}
-      <Button 
-        type="text" 
-        icon={<ArrowLeftOutlined />}
-        style={{ marginBottom: '24px', color: '#2c5aa0' }}
-        onClick={() => navigate('/')}
-      >
-        Volver
-      </Button>
+      {/* Main Title with Back Arrow and Risk Tag */}
+      <div style={{ marginBottom: '24px' }}>
+        {isLargeScreen ? (
+          <Row justify="space-between" align="middle">
+            <Title level={2} style={{ margin: 0, fontSize: '24px', fontWeight: 500 }}>
+              <ArrowLeftOutlined
+                style={{
+                  color: '#2c5aa0',
+                  marginRight: '12px',
+                  cursor: 'pointer',
+                  fontSize: '20px'
+                }}
+                onClick={() => navigate('/')}
+              />
+              Detalle de cartera - <span style={{ color: '#2c5aa0' }}>{investment.title}</span>
+            </Title>
+            <Tag color={getRiskLevelColor(investment.riskLevel)} style={{ fontSize: '14px' }}>
+              {investment.riskLevel.charAt(0).toUpperCase() + investment.riskLevel.slice(1)}
+            </Tag>
+          </Row>
+        ) : (
+          <div>
+            <Title level={2} style={{ margin: '0 0 16px 0', fontSize: '24px', fontWeight: 500 }}>
+              <ArrowLeftOutlined
+                style={{
+                  color: '#2c5aa0',
+                  marginRight: '12px',
+                  cursor: 'pointer',
+                  fontSize: '20px'
+                }}
+                onClick={() => navigate('/')}
+              />
+              Detalle de cartera
+            </Title>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: '#2c5aa0', fontSize: '20px', fontWeight: 500 }}>
+                {investment.title}
+              </span>
+              <Tag color={getRiskLevelColor(investment.riskLevel)} style={{ fontSize: '14px' }}>
+                {investment.riskLevel.charAt(0).toUpperCase() + investment.riskLevel.slice(1)}
+              </Tag>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
-        <Row justify="space-between" align="middle" style={{ marginBottom: '12px' }}>
-          <Title level={2} style={{ margin: 0, color: '#2c5aa0' }}>
-            {investment.title}
-          </Title>
-          <Tag color={getRiskLevelColor(investment.riskLevel)} style={{ fontSize: '14px' }}>
-            {investment.riskLevel.charAt(0).toUpperCase() + investment.riskLevel.slice(1)}
-          </Tag>
-        </Row>
-
+      {notificationContextHolder}
         {/* Performance */}
         <div style={{ marginBottom: '16px' }}>
           {isLargeScreen ? (
@@ -484,16 +467,12 @@ const InvestmentDetailSection: React.FC = () => {
 
       {/* Action Button */}
       <div style={{ textAlign: 'center' }}>
-        <Button 
-          type="primary" 
+        <Button
+          type="primary"
           size="large"
-          style={{ 
-            backgroundColor: '#2c5aa0', 
-            borderColor: '#2c5aa0',
-            borderRadius: '20px',
-            minWidth: '200px',
-            height: '48px',
-            fontSize: '16px'
+          style={{
+            backgroundColor: '#2c5aa0',
+            borderColor: '#2c5aa0'
           }}
           onClick={handleConfirmSelection}
         >

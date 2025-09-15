@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table, Tag, Button, Space } from 'antd';
 import { CaretUpOutlined, CaretDownOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router';
 import type { ColumnsType } from 'antd/es/table';
 import { getAllInvestments } from '../utils';
 import type { InvestmentData } from '../utils';
@@ -23,10 +22,10 @@ interface TableInvestmentData extends InvestmentData {
 interface InvestmentTableProps {
   riskFilter: RiskFilterType;
   onInvestmentConfirm: (investment: InvestmentData) => void;
+  onDirectConfirm: (investment: InvestmentData) => void;
 }
 
-const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestmentConfirm }) => {
-  const navigate = useNavigate();
+const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestmentConfirm, onDirectConfirm }) => {
   const getRiskLevelColor = (riskLevel: RiskLevel) => {
     switch (riskLevel) {
       case 'conservador':
@@ -129,7 +128,14 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestm
           <Button 
             type="text" 
             style={{ color: '#2c5aa0' }}
-            onClick={() => navigate(`/investment/${record.id}`)}
+            onClick={() => onInvestmentConfirm({
+              title: record.title,
+              riskLevel: record.riskLevel,
+              description: record.description,
+              performance: record.performance,
+              holdings: [],
+              evolution: []
+            })}
           >
             Abrir detalle
           </Button>
@@ -140,7 +146,7 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestm
               borderColor: '#2c5aa0',
               borderRadius: '20px'
             }}
-            onClick={() => onInvestmentConfirm({
+            onClick={() => onDirectConfirm({
               title: record.title,
               riskLevel: record.riskLevel,
               description: record.description,

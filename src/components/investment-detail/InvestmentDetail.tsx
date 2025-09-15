@@ -1,6 +1,6 @@
 import React from 'react';
-import { Modal, Typography, Tag, Row, Col, Space, Divider, Button } from 'antd';
-import { CaretUpOutlined, CaretDownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Typography, Tag, Row, Col, Space, Divider, Button } from 'antd';
+import { CaretUpOutlined, CaretDownOutlined, InfoCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -20,14 +20,14 @@ interface InvestmentData {
 }
 
 interface InvestmentDetailProps {
-  visible: boolean;
-  onClose: () => void;
+  onBack: () => void;
+  onConfirm?: () => void;
   investment: InvestmentData | null;
 }
 
 const InvestmentDetail: React.FC<InvestmentDetailProps> = ({
-  visible,
-  onClose,
+  onBack,
+  onConfirm,
   investment
 }) => {
   if (!investment) return null;
@@ -109,17 +109,17 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({
   const details = getInvestmentDetails(investment.title);
 
   return (
-    <Modal
-      title={null}
-      open={visible}
-      onCancel={onClose}
-      footer={null}
-      width={700}
-      centered
-    >
-      <div style={{ padding: '24px' }}>
-        {/* Header */}
+    <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto' }}>
+        {/* Back Button and Header */}
         <div style={{ marginBottom: '24px' }}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={onBack}
+            style={{ marginBottom: '16px', padding: '4px 8px', color: '#2c5aa0' }}
+          >
+            Volver a carteras
+          </Button>
           <Row justify="space-between" align="middle" style={{ marginBottom: '12px' }}>
             <Title level={2} style={{ margin: 0, color: '#2c5aa0' }}>
               {investment.title}
@@ -217,14 +217,13 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({
         {/* Action Buttons */}
         <Row gutter={12} justify="end">
           <Col>
-            <Button size="large" onClick={onClose}>
+            <Button size="large" onClick={onBack}>
               Volver
             </Button>
           </Col>
           <Col>
             <Button 
               type="primary" 
-              size="large"
               style={{ 
                 backgroundColor: '#2c5aa0', 
                 borderColor: '#2c5aa0',
@@ -233,15 +232,18 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({
               }}
               onClick={() => {
                 console.log('Confirming selection:', investment.title);
-                onClose();
+                if (onConfirm) {
+                  onConfirm();
+                } else {
+                  onBack();
+                }
               }}
             >
               Confirmar Selección
             </Button>
           </Col>
         </Row>
-      </div>
-    </Modal>
+    </div>
   );
 };
 

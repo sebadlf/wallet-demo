@@ -1,6 +1,5 @@
 import React from 'react';
 import { Row, Col } from 'antd';
-import { useNavigate } from 'react-router';
 import InvestmentCard from '../components/investment-card';
 import { getAllInvestments } from '../utils';
 import type { InvestmentData } from '../utils';
@@ -11,11 +10,11 @@ type RiskFilterType = 'todos' | RiskLevel[];
 interface InvestmentCardsProps {
   riskFilter: RiskFilterType;
   onInvestmentConfirm: (investment: InvestmentData) => void;
+  onDirectConfirm: (investment: InvestmentData) => void;
 }
 
 
-const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestmentConfirm }) => {
-  const navigate = useNavigate();
+const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestmentConfirm, onDirectConfirm }) => {
   
   // Get all investment data from utils
   const investmentData = getAllInvestments();
@@ -38,8 +37,15 @@ const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestm
             description={investment.description}
             performance={investment.performance}
             holdings={investment.holdings}
-            onViewDetails={() => navigate(`/investment/${investment.id}`)}
-            onInvest={() => onInvestmentConfirm({
+            onViewDetails={() => onInvestmentConfirm({
+              title: investment.title,
+              riskLevel: investment.riskLevel,
+              description: investment.description,
+              performance: investment.performance,
+              holdings: investment.holdings,
+              evolution: investment.evolution
+            })}
+            onInvest={() => onDirectConfirm({
               title: investment.title,
               riskLevel: investment.riskLevel,
               description: investment.description,

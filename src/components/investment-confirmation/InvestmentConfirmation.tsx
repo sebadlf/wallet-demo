@@ -1,6 +1,5 @@
 import React from 'react';
-import { Modal, Typography, Tag, Row, Col, Button } from 'antd';
-import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Modal, Typography, Tag, Row, Col, Button, Space, Alert } from 'antd';
 
 const { Title, Text } = Typography;
 
@@ -49,63 +48,98 @@ const InvestmentConfirmation: React.FC<InvestmentConfirmationProps> = ({
 
   return (
     <Modal
-      title={null}
+      title={
+        <span>
+          Confirmar Selección - <span style={{ color: '#2c5aa0' }}>{investment.title}</span>
+        </span>
+      }
       open={visible}
       onCancel={onCancel}
       footer={null}
-      width={500}
+      width={560}
       centered
+      style={{ borderRadius: '12px' }}
     >
-      <div style={{ padding: '24px', textAlign: 'center' }}>
-        {/* Icon */}
-        <ExclamationCircleOutlined 
-          style={{ 
-            fontSize: '48px', 
-            color: '#faad14', 
-            marginBottom: '24px',
-            display: 'block'
-          }} 
-        />
+      {/* Content */}
+      <div style={{ paddingTop: '16px' }}>
 
-        {/* Title */}
-        <Title level={3} style={{ marginBottom: '16px', color: '#2c5aa0' }}>
-          Confirmar Selección
-        </Title>
-
-        {/* Message */}
-        <Text style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.65)', marginBottom: '24px', display: 'block' }}>
-          ¿Estás seguro de que deseas seleccionar la siguiente cartera de inversión?
-        </Text>
-
-        {/* Investment Summary */}
-        <div style={{ 
-          backgroundColor: '#fafafa', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          marginBottom: '32px',
-          border: '1px solid #e8e8e8'
-        }}>
-          <Row justify="space-between" align="middle" style={{ marginBottom: '12px' }}>
-            <Title level={4} style={{ margin: 0, color: '#2c5aa0' }}>
-              {investment.title}
-            </Title>
-            <Tag color={getRiskLevelColor(investment.riskLevel)}>
-              {investment.riskLevel.charAt(0).toUpperCase() + investment.riskLevel.slice(1)}
-            </Tag>
-          </Row>
-
-          <Text style={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.65)', display: 'block' }}>
+        {/* Investment Header */}
+        <div style={{ marginBottom: '24px' }}>
+          <Text style={{ 
+            fontSize: '15px', 
+            color: 'rgba(0, 0, 0, 0.75)', 
+            display: 'block',
+            lineHeight: '1.6'
+          }}>
             {investment.description}
           </Text>
         </div>
 
+        {/* Performance Section */}
+        <div style={{ marginBottom: '32px' }}>
+          <Row justify="space-between" align="middle" style={{ marginBottom: '16px' }}>
+            <Title level={4} style={{ margin: 0, color: '#2c5aa0', fontWeight: 600 }}>
+              Rendimientos Recientes
+            </Title>
+            <Tag 
+              color={getRiskLevelColor(investment.riskLevel)}
+              style={{ 
+                padding: '6px 12px',
+                borderRadius: '20px',
+                fontSize: '14px',
+                fontWeight: 500
+              }}
+            >
+              {investment.riskLevel.charAt(0).toUpperCase() + investment.riskLevel.slice(1)}
+            </Tag>
+          </Row>
+          
+          <div style={{ 
+            background: 'linear-gradient(145deg, #ffffff 0%, #fafbfc 100%)',
+            padding: '24px', 
+            borderRadius: '12px',
+            border: '1px solid #e8f4fd',
+            boxShadow: '0 4px 12px rgba(44, 90, 160, 0.08)',
+            textAlign: 'center'
+          }}>
+            <Space size="large">
+              {investment.performance.slice(0, 3).map((perf, index) => (
+                <div key={index} style={{ textAlign: 'center' }}>
+                  <Text type="secondary" style={{ fontSize: '12px', display: 'block' }}>
+                    {perf.period}
+                  </Text>
+                  <Text strong style={{ 
+                    color: perf.isNegative ? '#ff4d4f' : '#52c41a',
+                    fontSize: '16px'
+                  }}>
+                    {perf.percentage}
+                  </Text>
+                </div>
+              ))}
+            </Space>
+          </div>
+        </div>
+
+        <Text style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.65)', marginBottom: '24px', display: 'block' }}>
+          Estás a punto de seleccionar una nueva cartera de inversión
+        </Text>
+
+        {/* Info Banner */}
+        <Alert
+          message="Información importante"
+          description="Al confirmar, esta cartera será agregada a tu perfil de inversión. Podrás modificar tu selección en cualquier momento."
+          type="info"
+          showIcon
+          style={{ marginBottom: '32px' }}
+        />
+
         {/* Action Buttons */}
-        <Row gutter={12} justify="center">
+        <Row gutter={16} justify="end">
           <Col>
-            <Button 
-              size="large" 
+            <Button
               onClick={onCancel}
-              style={{ minWidth: '100px' }}
+              type="default"
+              style={{ color: '#2c5aa0' }}
             >
               Cancelar
             </Button>
@@ -113,27 +147,16 @@ const InvestmentConfirmation: React.FC<InvestmentConfirmationProps> = ({
           <Col>
             <Button 
               type="primary" 
-              size="large"
               style={{ 
                 backgroundColor: '#2c5aa0', 
-                borderColor: '#2c5aa0',
-                borderRadius: '20px',
-                minWidth: '120px'
+                borderColor: '#2c5aa0'
               }}
               onClick={onConfirm}
             >
-              Confirmar
+              Confirmar Selección
             </Button>
           </Col>
         </Row>
-
-        {/* Additional Info */}
-        <div style={{ marginTop: '24px', padding: '16px', backgroundColor: '#f6ffed', borderRadius: '8px', border: '1px solid #b7eb8f' }}>
-          <CheckCircleOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
-          <Text style={{ fontSize: '12px', color: '#52c41a' }}>
-            Al confirmar, procederás con la selección de esta cartera de inversión.
-          </Text>
-        </div>
       </div>
     </Modal>
   );
