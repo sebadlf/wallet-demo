@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Typography, Tag, Select, Space, notification, Modal } from 'antd';
+import { Row, Col, Typography, Tag, Segmented, Space, notification, Modal } from 'antd';
 import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
 import InvestmentCards from './InvestmentCards';
@@ -8,7 +8,6 @@ import InvestmentConfirmation from '../components/investment-confirmation';
 import type { InvestmentData } from '../utils';
 
 const { Title } = Typography;
-const { Option } = Select;
 
 type ViewType = 'grilla' | 'lista';
 type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
@@ -143,14 +142,14 @@ const InvestmentSection: React.FC = () => {
         </Col>
         {isLargeScreen && (
           <Col>
-            <Select 
-              value={viewType} 
-              style={{ width: 120 }}
-              onChange={(value: ViewType) => setViewType(value)}
-            >
-              <Option value="grilla">Grilla</Option>
-              <Option value="lista">Lista</Option>
-            </Select>
+            <Segmented
+              value={viewType}
+              onChange={(value) => setViewType(value as ViewType)}
+              options={[
+                { label: 'Grilla', value: 'grilla' },
+                { label: 'Lista', value: 'lista' }
+              ]}
+            />
           </Col>
         )}
       </Row>
