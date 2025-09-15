@@ -46,8 +46,7 @@ export const INVESTMENT_DATA: Record<string, InvestmentData> = {
         { symbol: "BMA", name: "Banco Macro", percentage: 9.4 }
       ],
       evolution: [
-        { date: "2024-01-01", percentage: 0 },
-        { date: "2024-01-02", percentage: 0.08 },
+        { date: "2024-01-02", percentage: 0  },
         { date: "2024-01-03", percentage: 0.15 },
         { date: "2024-01-04", percentage: 0.09 },
         { date: "2024-01-05", percentage: 0.22 },
@@ -301,7 +300,7 @@ export const INVESTMENT_DATA: Record<string, InvestmentData> = {
         { date: "2024-12-19", percentage: 5.42 },
         { date: "2024-12-20", percentage: 3.85 },
         { date: "2024-12-23", percentage: 2.12 },
-        { date: "2024-12-24", percentage: 0.94 },
+        { date: "2024-12-24", percentage: -0.4 },
         { date: "2024-12-27", percentage: -0.58 },
         { date: "2024-12-30", percentage: -1.72 },
         { date: "2024-12-31", percentage: -2.45 }

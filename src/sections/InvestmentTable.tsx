@@ -7,7 +7,7 @@ import { getAllInvestments } from '../utils';
 import type { InvestmentData } from '../utils';
 
 type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
-type RiskFilterType = 'todos' | 'conservador' | 'moderado' | 'agresivo';
+type RiskFilterType = 'todos' | RiskLevel[];
 
 interface PerformanceData {
   period: string;
@@ -158,7 +158,11 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestm
 
   const filteredData = riskFilter === 'todos' 
     ? investmentData 
-    : investmentData.filter(investment => investment.riskLevel === riskFilter);
+    : investmentData.filter(investment => 
+        Array.isArray(riskFilter) 
+          ? riskFilter.includes(investment.riskLevel)
+          : investment.riskLevel === riskFilter
+      );
 
   return (
     <Table

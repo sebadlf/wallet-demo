@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Tag, Select, Space } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import InvestmentCards from './InvestmentCards';
@@ -10,13 +10,31 @@ const { Title } = Typography;
 const { Option } = Select;
 
 type ViewType = 'grilla' | 'lista';
-type RiskFilterType = 'todos' | 'conservador' | 'moderado' | 'agresivo';
+type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
 
 const InvestmentSection: React.FC = () => {
   const [viewType, setViewType] = useState<ViewType>('grilla');
-  const [riskFilter, setRiskFilter] = useState<RiskFilterType>('todos');
+  const [selectedRisks, setSelectedRisks] = useState<RiskLevel[]>([]);
   const [selectedInvestment, setSelectedInvestment] = useState<InvestmentData | null>(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(true);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const isLarge = window.innerWidth > 992; // lg breakpoint is 992px
+      setIsLargeScreen(isLarge);
+      
+      // Force grid view on small screens
+      if (!isLarge) {
+        setViewType('grilla');
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const handleInvestmentConfirm = (investment: InvestmentData) => {
     setSelectedInvestment(investment);
@@ -34,6 +52,21 @@ const InvestmentSection: React.FC = () => {
     setSelectedInvestment(null);
     // Here you would typically call an API to process the investment
   };
+
+  const toggleRiskFilter = (risk: RiskLevel) => {
+    setSelectedRisks(prev => {
+      if (prev.includes(risk)) {
+        return prev.filter(r => r !== risk);
+      } else {
+        return [...prev, risk];
+      }
+    });
+  };
+
+  const isRiskSelected = (risk: RiskLevel) => selectedRisks.includes(risk);
+
+  // Show all items if all options are selected or none are selected
+  const effectiveRiskFilter = selectedRisks.length === 0 || selectedRisks.length === 3 ? 'todos' : selectedRisks;
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       <Row justify="space-between" align="middle" style={{ marginBottom: '32px' }}>
@@ -42,16 +75,18 @@ const InvestmentSection: React.FC = () => {
             Carteras de inversión
           </Title>
         </Col>
-        <Col>
-          <Select 
-            value={viewType} 
-            style={{ width: 120 }}
-            onChange={(value: ViewType) => setViewType(value)}
-          >
-            <Option value="grilla">Grilla</Option>
-            <Option value="lista">Lista</Option>
-          </Select>
-        </Col>
+        {isLargeScreen && (
+          <Col>
+            <Select 
+              value={viewType} 
+              style={{ width: 120 }}
+              onChange={(value: ViewType) => setViewType(value)}
+            >
+              <Option value="grilla">Grilla</Option>
+              <Option value="lista">Lista</Option>
+            </Select>
+          </Col>
+        )}
       </Row>
 
       <Row gutter={[24, 16]} style={{ marginBottom: '32px' }}>
@@ -67,25 +102,12 @@ const InvestmentSection: React.FC = () => {
                   borderRadius: 16, 
                   padding: '4px 16px', 
                   cursor: 'pointer',
-                  backgroundColor: riskFilter === 'todos' ? '#2c5aa0' : '#fff',
-                  borderColor: riskFilter === 'todos' ? '#2c5aa0' : '#d9d9d9',
-                  color: riskFilter === 'todos' ? '#fff' : 'rgba(0, 0, 0, 0.65)'
-                }}
-                onClick={() => setRiskFilter('todos')}
-              >
-                Todos
-              </Tag>
-              <Tag 
-                style={{ 
-                  borderRadius: 16, 
-                  padding: '4px 16px', 
-                  cursor: 'pointer',
-                  backgroundColor: riskFilter === 'conservador' ? '#2c5aa0' : '#fff',
-                  borderColor: riskFilter === 'conservador' ? '#2c5aa0' : '#d9d9d9',
-                  color: riskFilter === 'conservador' ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                  backgroundColor: isRiskSelected('conservador') ? '#2c5aa0' : '#fff',
+                  borderColor: isRiskSelected('conservador') ? '#2c5aa0' : '#d9d9d9',
+                  color: isRiskSelected('conservador') ? '#fff' : 'rgba(0, 0, 0, 0.65)',
                   border: '1px solid'
                 }}
-                onClick={() => setRiskFilter('conservador')}
+                onClick={() => toggleRiskFilter('conservador')}
               >
                 Conservador
               </Tag>
@@ -94,12 +116,12 @@ const InvestmentSection: React.FC = () => {
                   borderRadius: 16, 
                   padding: '4px 16px', 
                   cursor: 'pointer',
-                  backgroundColor: riskFilter === 'moderado' ? '#2c5aa0' : '#fff',
-                  borderColor: riskFilter === 'moderado' ? '#2c5aa0' : '#d9d9d9',
-                  color: riskFilter === 'moderado' ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                  backgroundColor: isRiskSelected('moderado') ? '#2c5aa0' : '#fff',
+                  borderColor: isRiskSelected('moderado') ? '#2c5aa0' : '#d9d9d9',
+                  color: isRiskSelected('moderado') ? '#fff' : 'rgba(0, 0, 0, 0.65)',
                   border: '1px solid'
                 }}
-                onClick={() => setRiskFilter('moderado')}
+                onClick={() => toggleRiskFilter('moderado')}
               >
                 Moderado
               </Tag>
@@ -108,12 +130,12 @@ const InvestmentSection: React.FC = () => {
                   borderRadius: 16, 
                   padding: '4px 16px', 
                   cursor: 'pointer',
-                  backgroundColor: riskFilter === 'agresivo' ? '#2c5aa0' : '#fff',
-                  borderColor: riskFilter === 'agresivo' ? '#2c5aa0' : '#d9d9d9',
-                  color: riskFilter === 'agresivo' ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                  backgroundColor: isRiskSelected('agresivo') ? '#2c5aa0' : '#fff',
+                  borderColor: isRiskSelected('agresivo') ? '#2c5aa0' : '#d9d9d9',
+                  color: isRiskSelected('agresivo') ? '#fff' : 'rgba(0, 0, 0, 0.65)',
                   border: '1px solid'
                 }}
-                onClick={() => setRiskFilter('agresivo')}
+                onClick={() => toggleRiskFilter('agresivo')}
               >
                 Agresivo
               </Tag>
@@ -126,14 +148,14 @@ const InvestmentSection: React.FC = () => {
       {viewType === 'grilla' ? (
         <div style={{ marginTop: '32px' }}>
           <InvestmentCards 
-            riskFilter={riskFilter}
+            riskFilter={effectiveRiskFilter}
             onInvestmentConfirm={handleInvestmentConfirm}
           />
         </div>
       ) : (
         <div style={{ marginTop: '32px' }}>
           <InvestmentTable 
-            riskFilter={riskFilter}
+            riskFilter={effectiveRiskFilter}
             onInvestmentConfirm={handleInvestmentConfirm}
           />
         </div>

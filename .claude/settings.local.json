@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:ant.design)"
+      "WebFetch(domain:ant.design)",
+      "WebFetch(domain:bbsa.com.ar)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

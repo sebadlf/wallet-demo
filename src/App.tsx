@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import InvestmentSection from './sections/InvestmentSection';
 import InvestmentDetailSection from './sections/InvestmentDetailSection';
-import bbsaLogo from './assets/bbsa-logo.svg';
 import './App.css';
 
 // Header component
@@ -10,7 +9,7 @@ const Header = () => {
     <header className="app-header">
       <div className="header-content">
         <img 
-          src={bbsaLogo} 
+          src="https://bbsa.com.ar/wp-content/uploads/2022/01/Logo-Becerra.svg" 
           alt="BBSA Logo" 
           className="app-logo" 
         />

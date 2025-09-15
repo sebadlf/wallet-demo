@@ -1,10 +1,14 @@
-import React from 'react';
-import { Typography, Tag, Row, Col, Space, Divider, Button, Table } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Typography, Tag, Row, Col, Space, Divider, Button, Table, Card } from 'antd';
 import { CaretUpOutlined, CaretDownOutlined, InfoCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import { useNavigate, useParams } from 'react-router';
 import { getInvestmentData } from '../utils';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
 import { Pie, Line } from 'react-chartjs-2';
+import PerformanceChart from '../components/performance-chart/PerformanceChart';
 import type { ColumnsType } from 'antd/es/table';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
@@ -16,7 +20,18 @@ type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
 const InvestmentDetailSection: React.FC = () => {
   const navigate = useNavigate();
   const { investmentId } = useParams();
+  const [isLargeScreen, setIsLargeScreen] = useState(true);
 
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth > 992); // Larger than lg breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const investment = investmentId ? getInvestmentData(investmentId) : null;
 
@@ -151,12 +166,20 @@ const InvestmentDetailSection: React.FC = () => {
         {
           data,
           backgroundColor: [
-            '#2c5aa0',
-            '#4472c4',
-            '#5b9bd5',
-            '#70ad47',
-            '#ffc000',
-            '#a5a5a5'
+            'rgba(44, 90, 160, 0.6)',
+            'rgba(68, 114, 196, 0.6)',
+            'rgba(91, 155, 213, 0.6)',
+            'rgba(112, 173, 71, 0.6)',
+            'rgba(255, 192, 0, 0.6)',
+            'rgba(165, 165, 165, 0.6)'
+          ],
+          hoverBackgroundColor: [
+            'rgba(44, 90, 160, 0.9)',
+            'rgba(68, 114, 196, 0.9)',
+            'rgba(91, 155, 213, 0.9)',
+            'rgba(112, 173, 71, 0.9)',
+            'rgba(255, 192, 0, 0.9)',
+            'rgba(165, 165, 165, 0.9)'
           ],
           borderWidth: 1,
           borderColor: '#fff',
@@ -245,6 +268,24 @@ const InvestmentDetailSection: React.FC = () => {
     maintainAspectRatio: false,
   };
 
+  // Generate sample performance data based on evolution data
+  const getPerformanceData = () => {
+    const baseValue = 1000000; // Base value of 1M ARS
+    return investment.evolution.map((point, index) => {
+      const totalValue = baseValue * (1 + point.percentage / 100);
+      return {
+        date: point.date,
+        pesos: totalValue * 0.7, // 70% in pesos
+        dolares: (totalValue * 0.3) / 1200, // 30% in USD at ~1200 ARS/USD
+        cotizacion: 1200 + Math.random() * 100, // Random exchange rate around 1200
+        total: totalValue,
+        porcentaje: point.percentage
+      };
+    });
+  };
+
+  const performanceData = getPerformanceData();
+
   return (
     <div style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
       {/* Main Title */}
@@ -275,33 +316,80 @@ const InvestmentDetailSection: React.FC = () => {
 
         {/* Performance */}
         <div style={{ marginBottom: '16px' }}>
-          <Row gutter={[32, 16]}>
-            {investment.performance.map((item, index) => (
-              <Col span={8} key={index}>
-                <div style={{ textAlign: 'center', padding: '16px', backgroundColor: '#fafafa', borderRadius: '8px' }}>
-                  <Text type="secondary" style={{ fontSize: '14px', display: 'block', marginBottom: '8px' }}>
-                    {item.period}
-                  </Text>
-                  <Space align="center" size={4}>
-                    {item.isNegative ? (
-                      <CaretDownOutlined style={{ color: '#ff4d4f', fontSize: 12 }} />
-                    ) : (
-                      <CaretUpOutlined style={{ color: '#52c41a', fontSize: 12 }} />
-                    )}
-                    <Text 
-                      strong 
-                      style={{ 
-                        color: item.isNegative ? '#ff4d4f' : '#52c41a', 
-                        fontSize: '18px'
-                      }}
-                    >
-                      {item.percentage}
+          {isLargeScreen ? (
+            <Row gutter={[16, 16]}>
+              {investment.performance.map((item, index) => (
+                <Col xs={24} sm={12} lg={8} key={index}>
+                  <Card style={{ textAlign: 'center' }}>
+                    <Text type="secondary" style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>
+                      {item.period}
                     </Text>
-                  </Space>
-                </div>
-              </Col>
-            ))}
-          </Row>
+                    <Space align="center" size={4}>
+                      {item.isNegative ? (
+                        <CaretDownOutlined style={{ color: '#ff4d4f', fontSize: 16 }} />
+                      ) : (
+                        <CaretUpOutlined style={{ color: '#52c41a', fontSize: 16 }} />
+                      )}
+                      <Text 
+                        strong 
+                        style={{ 
+                          color: item.isNegative ? '#ff4d4f' : '#52c41a', 
+                          fontSize: '22px'
+                        }}
+                      >
+                        {item.percentage}
+                      </Text>
+                    </Space>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <div>
+              <Slider
+                dots={false}
+                infinite={false}
+                speed={300}
+                slidesToScroll={1}
+                autoplay={true}
+                arrows={false}
+                responsive={[
+                  {
+                    breakpoint: 768,
+                    settings: {
+                      slidesToShow: 1,
+                    }
+                  }
+                ]}
+              >
+                {[...investment.performance].reverse().map((item, index) => (
+                  <div key={index}>
+                    <Card style={{ textAlign: 'center' }}>
+                      <Text type="secondary" style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>
+                        {item.period}
+                      </Text>
+                      <Space align="center" size={4}>
+                        {item.isNegative ? (
+                          <CaretDownOutlined style={{ color: '#ff4d4f', fontSize: 16 }} />
+                        ) : (
+                          <CaretUpOutlined style={{ color: '#52c41a', fontSize: 16 }} />
+                        )}
+                        <Text 
+                          strong 
+                          style={{ 
+                            color: item.isNegative ? '#ff4d4f' : '#52c41a', 
+                            fontSize: '22px'
+                          }}
+                        >
+                          {item.percentage}
+                        </Text>
+                      </Space>
+                    </Card>
+                  </div>
+                ))}
+              </Slider>
+            </div>
+          )}
         </div>
 
         <Paragraph style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.65)', marginBottom: 0 }}>
@@ -329,8 +417,9 @@ const InvestmentDetailSection: React.FC = () => {
         <Title level={4} style={{ marginBottom: '16px' }}>
           Evolución del Portafolio
         </Title>
-        <div style={{ height: '300px', backgroundColor: '#fafafa', borderRadius: '8px', padding: '16px' }}>
-          <Line data={getEvolutionChartData()} options={evolutionChartOptions} />
+
+        <div style={{ backgroundColor: '#fafafa', borderRadius: '8px', padding: '16px' }}>
+          <PerformanceChart data={performanceData} />
         </div>
       </div>
 
@@ -354,7 +443,7 @@ const InvestmentDetailSection: React.FC = () => {
               style={{ backgroundColor: '#fff' }}
             />
           </Col>
-          <Col xs={24} lg={10}>
+          <Col xs={0} lg={10}>
             <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Pie data={chartData} options={chartOptions} />
             </div>

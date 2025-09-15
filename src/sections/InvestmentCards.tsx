@@ -5,7 +5,8 @@ import InvestmentCard from '../components/investment-card';
 import { getAllInvestments } from '../utils';
 import type { InvestmentData } from '../utils';
 
-type RiskFilterType = 'todos' | 'conservador' | 'moderado' | 'agresivo';
+type RiskLevel = 'conservador' | 'moderado' | 'agresivo';
+type RiskFilterType = 'todos' | RiskLevel[];
 
 interface InvestmentCardsProps {
   riskFilter: RiskFilterType;
@@ -21,7 +22,11 @@ const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestm
 
   const filteredData = riskFilter === 'todos' 
     ? investmentData 
-    : investmentData.filter(investment => investment.riskLevel === riskFilter);
+    : investmentData.filter(investment => 
+        Array.isArray(riskFilter) 
+          ? riskFilter.includes(investment.riskLevel)
+          : investment.riskLevel === riskFilter
+      );
 
   return (
     <Row gutter={[24, 24]}>
