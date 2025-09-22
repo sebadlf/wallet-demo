@@ -1,0 +1,9 @@
+| Instrumento                    | Color              | HEX       | RGBA (0.8)              |
+| ------------------------------ | ------------------ | --------- | ----------------------- |
+| Dólares (USD)                  | Verde sobrio       | `#2F6D3A` | `rgba(47,109,58,0.8)`   |
+| Pesos (ARS)                    | Celeste bandera UI | `#2A90D1` | `rgba(42,144,209,0.8)`  |
+| Bonos (Soberanos)              | Azul profundo      | `#2C3E8F` | `rgba(44,62,143,0.8)`   |
+| Obligaciones Negociables (ONs) | Verde petróleo     | `#00695C` | `rgba(0,105,92,0.8)`    |
+| Acciones (Locales)             | Naranja sobrio     | `#E67E22` | `rgba(230,126,34,0.8)`  |
+| CEDEARs                        | Violeta sobrio     | `#7E57C2` | `rgba(126,87,194,0.8)`  |
+| Otros / No categorizados       | Gris neutro        | `#9E9E9E` | `rgba(158,158,158,0.8)` |

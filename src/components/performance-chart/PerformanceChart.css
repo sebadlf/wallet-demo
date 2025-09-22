@@ -1,0 +1,18 @@
+.custom-segmented .ant-segmented-item-selected {
+  background-color: #2c5aa0 !important;
+  color: white !important;
+}
+
+.custom-segmented .ant-segmented-item:hover {
+  background-color: #1f4082 !important;
+  color: white !important;
+}
+
+.custom-segmented .ant-segmented-item-selected:hover {
+  background-color: #1f4082 !important;
+  color: white !important;
+}
+
+.custom-segmented .ant-segmented-thumb {
+  background-color: #2c5aa0 !important;
+}

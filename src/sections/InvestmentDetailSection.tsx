@@ -10,6 +10,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import { Pie } from 'react-chartjs-2';
 import PerformanceChart from '../components/performance-chart/PerformanceChart';
 import type { ColumnsType } from 'antd/es/table';
+import { INSTRUMENT_COLORS } from '../colors';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointElement, LineElement);
 
@@ -61,18 +62,6 @@ const InvestmentDetailSection: React.FC = () => {
     }
   };
 
-  const getRiskDescription = (riskLevel: RiskLevel) => {
-    switch (riskLevel) {
-      case 'conservador':
-        return 'Perfil de bajo riesgo con menor volatilidad. Ideal para inversores que buscan estabilidad y preservar el capital.';
-      case 'moderado':
-        return 'Perfil de riesgo equilibrado que busca un balance entre crecimiento y estabilidad del capital.';
-      case 'agresivo':
-        return 'Perfil de alto riesgo con mayor potencial de crecimiento. Adecuado para inversores con alta tolerancia al riesgo.';
-      default:
-        return '';
-    }
-  };
 
   const getInvestmentDetails = (title: string) => {
     const details = {
@@ -163,41 +152,90 @@ const InvestmentDetailSection: React.FC = () => {
     },
   ];
 
-  const getChartData = () => {
-    const sortedHoldings = [...investment.holdings].sort((a, b) => b.percentage - a.percentage);
-    const topFive = sortedHoldings.slice(0, 5);
-    const others = sortedHoldings.slice(5);
-    
-    const labels = topFive.map(holding => holding.symbol);
-    const data = topFive.map(holding => holding.percentage);
-    
-    if (others.length > 0) {
-      const othersTotal = others.reduce((sum, holding) => sum + holding.percentage, 0);
-      labels.push('Otros');
-      data.push(othersTotal);
+  const getInstrumentType = (symbol: string) => {
+    // Bonos soberanos
+    if (['AL30', 'GD30', 'AE38', 'AL35', 'GD35', 'BONOS'].includes(symbol)) {
+      return 'Bonos (Soberanos)';
     }
-    
+    // CEDEARs
+    if (['CEDEAR'].includes(symbol)) {
+      return 'CEDEARs';
+    }
+    // Letras y instrumentos de capitalización (consideramos como pesos)
+    if (['LECAP', 'FCI'].includes(symbol)) {
+      return 'Pesos (ARS)';
+    }
+    // Acciones locales (la mayoría de los símbolos)
+    if (['YPFD', 'GGAL', 'PAMP', 'TGS', 'ALUA', 'MIRG', 'BMA', 'TRAN'].includes(symbol)) {
+      return 'Acciones (Locales)';
+    }
+    // Default para otros
+    return 'Otros / No categorizados';
+  };
+
+
+  const getChartData = () => {
+    // Include ALL categories from chart.txt, each with minimum 5%
+    const allCategories = [
+      'Dólares (USD)',
+      'Pesos (ARS)',
+      'Bonos (Soberanos)',
+      'Obligaciones Negociables (ONs)',
+      'Acciones (Locales)',
+      'CEDEARs',
+      'Otros / No categorizados'
+    ];
+
+    // Generate random percentages with minimum 5% for each category
+    // Total available: 100% - (7 categories × 5% minimum) = 65% to distribute
+    const minimumPerCategory = 5;
+    const totalCategories = allCategories.length;
+    const minimumTotal = minimumPerCategory * totalCategories; // 35%
+    const availableToDistribute = 100 - minimumTotal; // 65%
+
+    // Generate random distribution of the available percentage
+    const randomDistribution = allCategories.map(() => Math.random());
+    const totalRandom = randomDistribution.reduce((sum, val) => sum + val, 0);
+
+    // Create instruments with minimum 5% + proportional share of remaining 65%
+    const mockInstruments = allCategories.map((label, index) => ({
+      label,
+      percentage: minimumPerCategory + Math.round((randomDistribution[index] / totalRandom) * availableToDistribute * 100) / 100
+    }));
+
+    // Ensure total is exactly 100% by adjusting the largest item
+    const currentTotal = mockInstruments.reduce((sum, item) => sum + item.percentage, 0);
+    const difference = 100 - currentTotal;
+
+    if (Math.abs(difference) > 0.01) {
+      const largestItem = mockInstruments.reduce((max, item) =>
+        item.percentage > max.percentage ? item : max
+      );
+      largestItem.percentage = Math.round((largestItem.percentage + difference) * 100) / 100;
+    }
+
+    // Final verification - ensure no item is below 5%
+    const finalInstruments = mockInstruments.map(item => ({
+      ...item,
+      percentage: Math.max(item.percentage, minimumPerCategory)
+    }));
+
+    // Sort by percentage (descending)
+    const sortedInstruments = finalInstruments.sort((a, b) => b.percentage - a.percentage);
+
+    const labels = sortedInstruments.map(item => item.label);
+    const data = sortedInstruments.map(item => item.percentage);
+
+    const backgroundColor = labels.map(label => INSTRUMENT_COLORS[label]?.default || 'rgba(158,158,158,0.8)');
+    const hoverBackgroundColor = labels.map(label => INSTRUMENT_COLORS[label]?.hover || 'rgba(158,158,158,1.0)');
+
     return {
       labels,
       datasets: [
         {
           data,
-          backgroundColor: [
-            'rgba(44, 90, 160, 0.6)',
-            'rgba(68, 114, 196, 0.6)',
-            'rgba(91, 155, 213, 0.6)',
-            'rgba(112, 173, 71, 0.6)',
-            'rgba(255, 192, 0, 0.6)',
-            'rgba(165, 165, 165, 0.6)'
-          ],
-          hoverBackgroundColor: [
-            'rgba(44, 90, 160, 0.9)',
-            'rgba(68, 114, 196, 0.9)',
-            'rgba(91, 155, 213, 0.9)',
-            'rgba(112, 173, 71, 0.9)',
-            'rgba(255, 192, 0, 0.9)',
-            'rgba(165, 165, 165, 0.9)'
-          ],
+          backgroundColor,
+          hoverBackgroundColor,
           borderWidth: 1,
           borderColor: '#fff',
         },
@@ -375,30 +413,18 @@ const InvestmentDetailSection: React.FC = () => {
           )}
         </div>
 
-        <Paragraph style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.65)', marginBottom: 0 }}>
-          {investment.description}
+        <Paragraph style={{ fontSize: '16px', color: 'rgba(0, 0, 0, 0.65)', marginBottom: 0, whiteSpace: 'pre-line' }}>
+          {investment.descriptionExtended}
         </Paragraph>
       </div>
 
       <Divider />
 
-      {/* Risk Profile */}
-      <div style={{ marginBottom: '24px' }}>
-        <Title level={4} style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <InfoCircleOutlined style={{ color: '#2c5aa0' }} />
-          Perfil de Riesgo
-        </Title>
-        <Text style={{ fontSize: '14px', color: 'rgba(0, 0, 0, 0.65)' }}>
-          {getRiskDescription(investment.riskLevel)}
-        </Text>
-      </div>
-
-      <Divider />
 
       {/* Portfolio Evolution */}
       <div style={{ marginBottom: '24px' }}>
         <Title level={4} style={{ marginBottom: '16px' }}>
-          Evolución del Portafolio
+          Evolucion de cartera
         </Title>
 
         <div style={{ backgroundColor: '#fafafa', borderRadius: '8px', padding: '16px' }}>
@@ -411,7 +437,7 @@ const InvestmentDetailSection: React.FC = () => {
       {/* Holdings Section */}
       <div style={{ marginBottom: '32px' }}>
         <Title level={4} style={{ marginBottom: '16px' }}>
-          Composición de la Cartera
+          Composición de cartera
         </Title>
         <Row gutter={[24, 16]}>
           <Col xs={24} lg={14}>
@@ -434,36 +460,6 @@ const InvestmentDetailSection: React.FC = () => {
         </Row>
       </div>
 
-      <Divider />
-
-      {/* Investment Details */}
-      <div style={{ marginBottom: '32px' }}>
-        <Title level={4} style={{ marginBottom: '16px' }}>
-          Detalles de la Inversión
-        </Title>
-        <Row gutter={[24, 16]}>
-          <Col span={12}>
-            <div>
-              <Text strong style={{ display: 'block', marginBottom: '4px' }}>
-                Monto Mínimo
-              </Text>
-              <Text style={{ fontSize: '16px', color: '#2c5aa0' }}>
-                {details.minAmount}
-              </Text>
-            </div>
-          </Col>
-          <Col span={12}>
-            <div>
-              <Text strong style={{ display: 'block', marginBottom: '4px' }}>
-                Comisiones
-              </Text>
-              <Text style={{ fontSize: '16px', color: '#2c5aa0' }}>
-                {details.fees}
-              </Text>
-            </div>
-          </Col>
-        </Row>
-      </div>
 
       {/* Action Button */}
       <div style={{ textAlign: 'center' }}>

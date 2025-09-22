@@ -183,36 +183,6 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({
           </Row>
         </div>
 
-        <Divider />
-
-        {/* Investment Details */}
-        <div style={{ marginBottom: '32px' }}>
-          <Title level={4} style={{ marginBottom: '16px' }}>
-            Detalles de la Inversión
-          </Title>
-          <Row gutter={[24, 16]}>
-            <Col span={12}>
-              <div>
-                <Text strong style={{ display: 'block', marginBottom: '4px' }}>
-                  Monto Mínimo
-                </Text>
-                <Text style={{ fontSize: '16px', color: '#2c5aa0' }}>
-                  {details.minAmount}
-                </Text>
-              </div>
-            </Col>
-            <Col span={12}>
-              <div>
-                <Text strong style={{ display: 'block', marginBottom: '4px' }}>
-                  Comisiones
-                </Text>
-                <Text style={{ fontSize: '16px', color: '#2c5aa0' }}>
-                  {details.fees}
-                </Text>
-              </div>
-            </Col>
-          </Row>
-        </div>
 
         {/* Action Buttons */}
         <Row gutter={12} justify="end">

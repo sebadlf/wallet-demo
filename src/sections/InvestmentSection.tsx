@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router';
 import InvestmentCards from './InvestmentCards';
 import InvestmentTable from './InvestmentTable';
 import InvestmentConfirmation from '../components/investment-confirmation';
+import InvestmentSelectionModal from '../components/investment-selection-modal';
 import type { InvestmentData } from '../utils';
 
 const { Title } = Typography;
@@ -18,6 +19,7 @@ const InvestmentSection: React.FC = () => {
   const [selectedRisks, setSelectedRisks] = useState<RiskLevel[]>([]);
   const [selectedInvestment, setSelectedInvestment] = useState<InvestmentData | null>(null);
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [selectionModalVisible, setSelectionModalVisible] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(true);
 
   const [notificationApi, notificationContextHolder] = notification.useNotification();
@@ -70,31 +72,30 @@ const InvestmentSection: React.FC = () => {
   };
 
   const handleDirectConfirm = (investment: InvestmentData) => {
-    modalApi.confirm({
-      title: '¿Confirmar selección?',
-      icon: <ExclamationCircleOutlined />,
-      content: `¿Estás seguro de que deseas seleccionar la cartera "${investment.title}"?`,
-      okText: 'Confirmar',
-      cancelText: 'Cancelar',
-      okButtonProps: {
-        style: { backgroundColor: '#2c5aa0', borderColor: '#2c5aa0' }
-      },
-      cancelButtonProps: {
-        style: { color: '#2c5aa0' }
-      },
-      onOk() {
-        console.log('Direct investment confirmed:', investment.title);
-        console.log('About to show toast message');
-
-        showSuccessNotification();
-
-        console.log('Toast message called');
-
-        // Here you would typically call an API to process the investment
-      }
-    });
+    setSelectedInvestment(investment);
+    setSelectionModalVisible(true);
   };
 
+
+  const handleSelectionModalCancel = () => {
+    setSelectionModalVisible(false);
+    setSelectedInvestment(null);
+  };
+
+  const handleSelectionModalConfirm = () => {
+    console.log('Direct investment confirmed:', selectedInvestment?.title);
+    console.log('About to show toast message');
+
+    showSuccessNotification();
+
+    console.log('Toast message called');
+
+    // Close modal
+    setSelectionModalVisible(false);
+    setSelectedInvestment(null);
+
+    // Here you would typically call an API to process the investment
+  };
 
   const handleConfirmationCancel = () => {
     setConfirmationVisible(false);
@@ -227,6 +228,13 @@ const InvestmentSection: React.FC = () => {
           />
         </div>
       )}
+
+      <InvestmentSelectionModal
+        visible={selectionModalVisible}
+        onCancel={handleSelectionModalCancel}
+        onConfirm={handleSelectionModalConfirm}
+        investment={selectedInvestment}
+      />
 
       <InvestmentConfirmation
         visible={confirmationVisible}

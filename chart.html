@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Gráfico de instrumentos financieros (AR) — Chart.js</title>
+  <!-- CDN Chart.js v4 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      /* Tokens HEX (sin alpha, por si necesitás reutilizar en otras vistas) */
+      --usd: #2F6D3A;      /* Dólares */
+      --ars: #2A90D1;      /* Pesos */
+      --bonos: #2C3E8F;    /* Bonos soberanos */
+      --on: #00695C;       /* Obligaciones Negociables */
+      --acciones: #E67E22; /* Acciones locales */
+      --cedears: #7E57C2;  /* CEDEARs */
+      --otros: #9E9E9E;    /* No categorizados */
+
+      /* Versiones RGBA con alpha=0.8 para Chart.js */
+      --usd-80: rgba(47,109,58,0.8);
+      --ars-80: rgba(42,144,209,0.8);
+      --bonos-80: rgba(44,62,143,0.8);
+      --on-80: rgba(0,105,92,0.8);
+      --acciones-80: rgba(230,126,34,0.8);
+      --cedears-80: rgba(126,87,194,0.8);
+      --otros-80: rgba(158,158,158,0.8);
+    }
+    body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    .wrap{ max-width: 860px; margin-inline: auto; }
+    .header{ margin-bottom: 16px; }
+    canvas{ background: #fff; border-radius: 12px; box-shadow: 0 1px 6px rgba(0,0,0,.08); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <h2>Instrumentos financieros (AR) — Paleta corporativa</h2>
+    <p>Colores: USD (<code>#2F6D3A</code>), ARS (<code>#2A90D1</code>), Bonos (<code>#2C3E8F</code>), ON (<code>#00695C</code>), Acciones (<code>#E67E22</code>), CEDEARs (<code>#7E57C2</code>), Otros (<code>#9E9E9E</code>).</p>
+  </div>
+
+  <canvas id="finanzasPie" height="120"></canvas>
+</div>
+
+<script>
+  const ctx = document.getElementById('finanzasPie');
+
+  // Datos de ejemplo (podés reemplazar por los reales)
+  const labels = [
+    'Dólares (USD)',
+    'Pesos (ARS)',
+    'Bonos (Soberanos)',
+    'Obligaciones Negociables (ON)',
+    'Acciones (Local)',
+    'CEDEARs',
+    'Otros'
+  ];
+  const data = [25, 20, 15, 10, 20, 10, 5];
+
+  // Helper: leer variables CSS
+  const css = getComputedStyle(document.documentElement);
+  const colors80 = [
+    css.getPropertyValue('--usd-80').trim(),
+    css.getPropertyValue('--ars-80').trim(),
+    css.getPropertyValue('--bonos-80').trim(),
+    css.getPropertyValue('--on-80').trim(),
+    css.getPropertyValue('--acciones-80').trim(),
+    css.getPropertyValue('--cedears-80').trim(),
+    css.getPropertyValue('--otros-80').trim()
+  ];
+
+  // Bordes finos (mismo color sin alpha o un gris claro)
+  const borderColors = [
+    css.getPropertyValue('--usd').trim(),
+    css.getPropertyValue('--ars').trim(),
+    css.getPropertyValue('--bonos').trim(),
+    css.getPropertyValue('--on').trim(),
+    css.getPropertyValue('--acciones').trim(),
+    css.getPropertyValue('--cedears').trim(),
+    css.getPropertyValue('--otros').trim()
+  ];
+
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Distribución (%)',
+        data,
+        backgroundColor: colors80,
+        borderColor: borderColors,
+        borderWidth: 1,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { boxWidth: 18, usePointStyle: true, pointStyle: 'rectRounded' }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const label = ctx.label || '';
+              const value = ctx.parsed;
+              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+              const pct = total ? (value*100/total).toFixed(1) : 0;
+              return `${label}: ${value} (${pct}%)`;
+            }
+          }
+        },
+        title: {
+          display: true,
+          text: 'Portafolio por instrumento (ejemplo)',
+          font: { size: 16, weight: 'bold' }
+        }
+      },
+      layout: { padding: 8 },
+      animation: { duration: 600 }
+    }
+  });
+</script>
+</body>
+</html>

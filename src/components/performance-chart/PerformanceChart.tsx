@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
-import { Button, Space } from 'antd';
+import { Segmented } from 'antd';
+import './PerformanceChart.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -20,27 +21,47 @@ interface PerformanceChartProps {
 
 const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
   const [activeView, setActiveView] = useState<'value' | 'performance'>('performance');
+  const [activeCurrency, setActiveCurrency] = useState<'pesos' | 'dolares'>('pesos');
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-AR', { month: 'short', day: 'numeric' });
   };
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value: number, currency: 'ARS' | 'USD' = 'ARS') => {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
-      currency: 'ARS',
+      currency: currency,
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: currency === 'USD' ? 2 : 0,
     }).format(value);
+  };
+
+  const getCurrencyData = () => {
+    switch (activeCurrency) {
+      case 'pesos':
+        return {
+          data: data.map(item => item.pesos),
+          label: 'Pesos (ARS)',
+          currency: 'ARS' as const
+        };
+      case 'dolares':
+      default:
+        return {
+          data: data.map(item => item.dolares),
+          label: 'Dólares (USD)',
+          currency: 'USD' as const
+        };
+    }
   };
 
   const getChartData = () => {
     if (activeView === 'value') {
+      const currencyData = getCurrencyData();
       return {
         labels: data.map(item => formatDate(item.date)),
         datasets: [{
-          label: 'Valor (ARS)',
-          data: data.map(item => item.total),
+          label: currencyData.label,
+          data: currencyData.data,
           borderColor: '#2c5aa0',
           backgroundColor: 'transparent',
           borderWidth: 2,
@@ -110,6 +131,8 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
   };
 
   const getOptions = () => {
+    const currencyData = getCurrencyData();
+
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -125,9 +148,9 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
           callbacks: {
             label: function(context: any) {
               const value = context.parsed.y;
-              
+
               if (activeView === 'value') {
-                return `Valor: ${formatCurrency(value)}`;
+                return `${currencyData.label}: ${formatCurrency(value, currencyData.currency)}`;
               } else {
                 return `Performance: ${value?.toFixed(2)}%`;
               }
@@ -150,13 +173,13 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
           display: true,
           title: {
             display: true,
-            text: activeView === 'value' ? 'Valor (ARS)' : 'Performance (%)',
+            text: activeView === 'value' ? currencyData.label : 'Performance (%)',
             color: activeView === 'value' ? '#2c5aa0' : '#666',
           },
           ticks: {
             callback: function(value: any) {
               if (activeView === 'value') {
-                return formatCurrency(value);
+                return formatCurrency(value, currencyData.currency);
               } else {
                 return value + '%';
               }
@@ -172,32 +195,35 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ data }) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {/* Toggle Buttons */}
-      <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
-        <Space>
-          <Button
-            type={activeView === 'performance' ? 'primary' : 'default'}
-            style={{
-              backgroundColor: activeView === 'performance' ? '#2c5aa0' : undefined,
-              borderColor: activeView === 'performance' ? '#2c5aa0' : undefined,
-            }}
-            onClick={() => setActiveView('performance')}
-          >
-            Performance
-          </Button>
-          <Button
-            type={activeView === 'value' ? 'primary' : 'default'}
-            style={{
-              backgroundColor: activeView === 'value' ? '#2c5aa0' : undefined,
-              borderColor: activeView === 'value' ? '#2c5aa0' : undefined,
-            }}
-            onClick={() => setActiveView('value')}
-          >
-            Valor
-          </Button>
-        </Space>
+      {/* Toggle Controls */}
+      <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px', color: '#666', fontWeight: 500 }}>Vista:</span>
+          <Segmented
+            value={activeView}
+            onChange={(value) => setActiveView(value as 'performance' | 'value')}
+            options={[
+              { label: 'Performance', value: 'performance' },
+              { label: 'Valor', value: 'value' }
+            ]}
+            className="custom-segmented"
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px', color: '#666', fontWeight: 500 }}>Moneda:</span>
+          <Segmented
+            value={activeCurrency}
+            onChange={(value) => setActiveCurrency(value as 'pesos' | 'dolares')}
+            options={[
+              { label: 'Pesos', value: 'pesos' },
+              { label: 'Dólares', value: 'dolares' }
+            ]}
+            className="custom-segmented"
+          />
+        </div>
       </div>
-      
+
       {/* Chart */}
       <div style={{ height: '400px' }}>
         <Line data={getChartData()} options={getOptions()} />

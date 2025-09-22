@@ -37,6 +37,7 @@ interface InvestmentCardProps {
   description?: string;
   performance?: PerformanceData[];
   holdings?: StockHolding[];
+  horizonteInversion?: string;
   onViewDetails?: () => void;
   onInvest?: () => void;
 }
@@ -51,6 +52,7 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
     { period: "Trimestre", percentage: "8,19%" }
   ],
   holdings = [],
+  horizonteInversion = "Corto plazo",
   onViewDetails,
   onInvest
 }) => {
@@ -111,30 +113,14 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
           </Row>
         </div>
 
-        {topHoldings.length > 0 && (
-          <div>
-            <Text strong style={{ fontSize: 14, marginBottom: 8, display: 'block' }}>
-              Principales participaciones
-            </Text>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {topHoldings.map((holding, index) => (
-                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <Text strong style={{ fontSize: 12, color: '#2c5aa0' }}>
-                      {holding.symbol}
-                    </Text>
-                    <Text type="secondary" style={{ fontSize: 11 }}>
-                      {holding.name}
-                    </Text>
-                  </div>
-                  <Text strong style={{ fontSize: 12, color: '#52c41a' }}>
-                    {holding.percentage.toFixed(1)}%
-                  </Text>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div>
+          <Text strong style={{ fontSize: 14, marginBottom: 8, display: 'block' }}>
+            Horizonte de inversión:
+          </Text>
+          <Text style={{ fontSize: 14, color: '#2c5aa0', fontWeight: 500 }}>
+            {horizonteInversion}
+          </Text>
+        </div>
 
         <Row gutter={12}>
           <Col span={12}>

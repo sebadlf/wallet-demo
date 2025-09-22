@@ -37,13 +37,15 @@ const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestm
             description={investment.description}
             performance={investment.performance}
             holdings={investment.holdings}
+            horizonteInversion={investment.horizonteInversion}
             onViewDetails={() => onInvestmentConfirm({
               title: investment.title,
               riskLevel: investment.riskLevel,
               description: investment.description,
               performance: investment.performance,
               holdings: investment.holdings,
-              evolution: investment.evolution
+              evolution: investment.evolution,
+              horizonteInversion: investment.horizonteInversion
             })}
             onInvest={() => onDirectConfirm({
               title: investment.title,
@@ -51,7 +53,8 @@ const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestm
               description: investment.description,
               performance: investment.performance,
               holdings: investment.holdings,
-              evolution: investment.evolution
+              evolution: investment.evolution,
+              horizonteInversion: investment.horizonteInversion
             })}
           />
         </Col>
