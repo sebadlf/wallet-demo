@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Typography, Tag, Row, Col, Button, Space, Alert, Divider } from 'antd';
-import { CaretUpOutlined, CaretDownOutlined, InfoCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 

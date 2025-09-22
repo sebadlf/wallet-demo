@@ -134,7 +134,9 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestm
               description: record.description,
               performance: record.performance,
               holdings: [],
-              evolution: []
+              evolution: [],
+              descriptionExtended: record.descriptionExtended,
+              horizonteInversion: record.horizonteInversion
             })}
           >
             Abrir detalle
@@ -152,7 +154,9 @@ const InvestmentTable: React.FC<InvestmentTableProps> = ({ riskFilter, onInvestm
               description: record.description,
               performance: record.performance,
               holdings: [],
-              evolution: []
+              evolution: [],
+              descriptionExtended: record.descriptionExtended,
+              horizonteInversion: record.horizonteInversion
             })}
           >
             Seleccionar

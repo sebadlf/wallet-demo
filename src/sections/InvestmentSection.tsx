@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Typography, Tag, Segmented, Space, notification, Modal } from 'antd';
-import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router';
 import InvestmentCards from './InvestmentCards';
 import InvestmentTable from './InvestmentTable';
@@ -23,7 +23,7 @@ const InvestmentSection: React.FC = () => {
   const [isLargeScreen, setIsLargeScreen] = useState(true);
 
   const [notificationApi, notificationContextHolder] = notification.useNotification();
-  const [modalApi, modalContextHolder] = Modal.useModal();
+  const [_, modalContextHolder] = Modal.useModal();
 
 
 

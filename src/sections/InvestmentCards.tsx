@@ -45,7 +45,8 @@ const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestm
               performance: investment.performance,
               holdings: investment.holdings,
               evolution: investment.evolution,
-              horizonteInversion: investment.horizonteInversion
+              horizonteInversion: investment.horizonteInversion,
+              descriptionExtended: investment.descriptionExtended
             })}
             onInvest={() => onDirectConfirm({
               title: investment.title,
@@ -54,7 +55,8 @@ const InvestmentCards: React.FC<InvestmentCardsProps> = ({ riskFilter, onInvestm
               performance: investment.performance,
               holdings: investment.holdings,
               evolution: investment.evolution,
-              horizonteInversion: investment.horizonteInversion
+              horizonteInversion: investment.horizonteInversion,
+              descriptionExtended: investment.descriptionExtended
             })}
           />
         </Col>

@@ -58,55 +58,7 @@ const InvestmentDetail: React.FC<InvestmentDetailProps> = ({
     }
   };
 
-  const getInvestmentDetails = (title: string) => {
-    const details = {
-      'Ahorro $': {
-        minAmount: '$10.000',
-        duration: 'Sin plazo fijo',
-        fees: '0.5% anual',
-        liquidity: 'Inmediata'
-      },
-      'Ahorro Plus': {
-        minAmount: '$50.000',
-        duration: 'Sin plazo fijo',
-        fees: '0.3% anual',
-        liquidity: 'Inmediata'
-      },
-      'Gestión MIX VI': {
-        minAmount: '$100.000',
-        duration: 'Mínimo 90 días',
-        fees: '1.2% anual',
-        liquidity: '24 horas hábiles'
-      },
-      'Cartera Renta $': {
-        minAmount: '$250.000',
-        duration: 'Mínimo 180 días',
-        fees: '1.5% anual',
-        liquidity: '24 horas hábiles'
-      },
-      'Bonos': {
-        minAmount: '$500.000',
-        duration: 'Variable según bono',
-        fees: '2.0% anual',
-        liquidity: '48 horas hábiles'
-      },
-      'Cartera Renta Fija': {
-        minAmount: '$1.000.000',
-        duration: 'Mínimo 1 año',
-        fees: '1.8% anual',
-        liquidity: '48 horas hábiles'
-      }
-    };
 
-    return details[title as keyof typeof details] || {
-      minAmount: 'No especificado',
-      duration: 'No especificado',
-      fees: 'No especificado',
-      liquidity: 'No especificado'
-    };
-  };
-
-  const details = getInvestmentDetails(investment.title);
 
   return (
     <div style={{ padding: '24px', maxWidth: '800px', margin: '0 auto' }}>

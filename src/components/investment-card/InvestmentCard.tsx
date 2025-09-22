@@ -51,15 +51,11 @@ const InvestmentCard: React.FC<InvestmentCardProps> = ({
     { period: "Mes", percentage: "3,46%" },
     { period: "Trimestre", percentage: "8,19%" }
   ],
-  holdings = [],
   horizonteInversion = "Corto plazo",
   onViewDetails,
   onInvest
 }) => {
-  // Get top 3 holdings by percentage
-  const topHoldings = holdings
-    .sort((a, b) => b.percentage - a.percentage)
-    .slice(0, 3);
+
   return (
     <Card
       style={{ borderRadius: 12, boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)' }}

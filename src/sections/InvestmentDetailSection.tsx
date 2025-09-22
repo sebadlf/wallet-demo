@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Tag, Row, Col, Space, Divider, Button, Table, Card, notification } from 'antd';
-import { CaretUpOutlined, CaretDownOutlined, InfoCircleOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { CaretUpOutlined, CaretDownOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -62,43 +62,6 @@ const InvestmentDetailSection: React.FC = () => {
     }
   };
 
-
-  const getInvestmentDetails = (title: string) => {
-    const details = {
-      'Ahorro $': {
-        minAmount: '$10.000',
-        fees: '0.5% anual'
-      },
-      'Ahorro Plus': {
-        minAmount: '$50.000',
-        fees: '0.3% anual'
-      },
-      'Gestión MIX VI': {
-        minAmount: '$100.000',
-        fees: '1.2% anual'
-      },
-      'Cartera Renta $': {
-        minAmount: '$250.000',
-        fees: '1.5% anual'
-      },
-      'Bonos': {
-        minAmount: '$500.000',
-        fees: '2.0% anual'
-      },
-      'Cartera Renta Fija': {
-        minAmount: '$1.000.000',
-        fees: '1.8% anual'
-      }
-    };
-
-    return details[title as keyof typeof details] || {
-      minAmount: 'No especificado',
-      fees: 'No especificado'
-    };
-  };
-
-  const details = getInvestmentDetails(investment.title);
-
   const showSuccessNotification = () => {
     console.log('Show success notification!!!');
     notificationApi.success({
@@ -152,26 +115,7 @@ const InvestmentDetailSection: React.FC = () => {
     },
   ];
 
-  const getInstrumentType = (symbol: string) => {
-    // Bonos soberanos
-    if (['AL30', 'GD30', 'AE38', 'AL35', 'GD35', 'BONOS'].includes(symbol)) {
-      return 'Bonos (Soberanos)';
-    }
-    // CEDEARs
-    if (['CEDEAR'].includes(symbol)) {
-      return 'CEDEARs';
-    }
-    // Letras y instrumentos de capitalización (consideramos como pesos)
-    if (['LECAP', 'FCI'].includes(symbol)) {
-      return 'Pesos (ARS)';
-    }
-    // Acciones locales (la mayoría de los símbolos)
-    if (['YPFD', 'GGAL', 'PAMP', 'TGS', 'ALUA', 'MIRG', 'BMA', 'TRAN'].includes(symbol)) {
-      return 'Acciones (Locales)';
-    }
-    // Default para otros
-    return 'Otros / No categorizados';
-  };
+
 
 
   const getChartData = () => {
